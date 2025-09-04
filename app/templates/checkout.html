@@ -1,0 +1,43 @@
+{% extends 'shop_base.html' %}
+{% block content %}
+    <h2>Checkout</h2>
+    <div class="checkout-container">
+        <div class="order-summary">
+            <h3>Order Summary</h3>
+            <table>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product.name }} (x{{ item.quantity }})</td>
+                    <td>₹{{ "%.2f"|format(item.total) }}</td>
+                </tr>
+                {% endfor %}
+                <tr class="summary-total">
+                    <td><strong>Total</strong></td>
+                    <td><strong>₹{{ "%.2f"|format(total) }}</strong></td>
+                </tr>
+            </table>
+        </div>
+        <div class="shipping-form">
+            <h3>Shipping Information</h3>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" value="{{ current_user.name if current_user.is_authenticated else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" value="{{ current_user.email if current_user.is_authenticated else '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Shipping Address</label>
+                    <textarea id="address" name="address" rows="3" required>{{ current_user.address if current_user.is_authenticated else '' }}</textarea>
+                </div>
+                 <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" name="city" value="{{ current_user.city if current_user.is_authenticated else '' }}" required>
+                </div>
+                <button type="submit">Place Order</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

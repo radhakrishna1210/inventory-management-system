@@ -1,0 +1,31 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+    <h2>Edit Product: {{ product.name }}</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">Product Name</label>
+            <input type="text" id="name" name="name" value="{{ product.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="cost_price">Cost Price (₹)</label>
+            <input type="number" step="0.01" id="cost_price" name="cost_price" value="{{ product.cost_price }}" required>
+        </div>
+        <div class="form-group">
+            <label for="selling_price">Selling Price (₹)</label>
+            <input type="number" step="0.01" id="selling_price" name="selling_price" value="{{ product.selling_price }}" required>
+        </div>
+        <div class="form-group">
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" value="{{ product.category or '' }}">
+        </div>
+        <div class="form-group">
+            <label for="image_file">Change Image (optional)</label>
+            <input type="file" id="image_file" name="image_file">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description">{{ product.description or '' }}</textarea>
+        </div>
+        <button type="submit">Save Changes</button>
+    </form>
+{% endblock %}

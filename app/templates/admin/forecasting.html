@@ -1,0 +1,13 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+    <h2>Demand Forecasting</h2>
+    <p>This page uses a simple machine learning model to predict future product demand.</p>
+
+    <div class="summary-card">
+        <h3>Predicted Sales for Next 30 Days</h3>
+        <p class="prediction">{{ prediction }} units</p>
+    </div>
+
+    <a href="{{ url_for('admin.train_model_route') }}" class="btn-edit">Re-Train Model</a>
+    <p><small>Click to re-train the model with the latest sales data. This might take a moment.</small></p>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'shop_base.html' %}
+{% block content %}
+    <h2>Your Shopping Cart</h2>
+    {% if not cart_items %}
+        <p>Your cart is empty. <a href="{{ url_for('main.home') }}">Continue shopping</a>.</p>
+    {% else %}
+        <div class="cart-table-container">
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <!-- CORRECTED: Use selling_price and ₹ symbol -->
+                    <td>₹{{ "%.2f"|format(item.product.selling_price) }}</td>
+                    <td>
+                        <form action="{{ url_for('main.update_cart', id=item.product.id) }}" method="POST" class="update-form">
+                            <label for="quantity-{{ item.product.id }}" class="visually-hidden">Quantity</label>
+                            <input type="number" id="quantity-{{ item.product.id }}" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" title="Enter quantity" placeholder="Quantity">
+                            <button type="submit">Update</button>
+                        </form>
+                    </td>
+                    <td>₹{{ "%.2f"|format(item.total) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <div class="cart-summary">
+            <h3>Total: ₹{{ "%.2f"|format(total) }}</h3>
+            <a href="{{ url_for('main.checkout') }}" class="btn-checkout">Proceed to Checkout</a>
+        </div>
+    {% endif %}
+{% endblock %}

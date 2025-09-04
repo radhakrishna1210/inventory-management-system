@@ -1,0 +1,163 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+<style>
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    .card {
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+    .card h3 {
+        margin-top: 0;
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 0.75rem;
+    }
+    .full-width {
+        grid-column: 1 / -1;
+    }
+    .metric {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+</style>
+
+<h2>Dashboard</h2>
+
+<div class="dashboard-grid">
+    <!-- Today's Profit Card -->
+    <div class="card">
+        <h3>Today's Profit</h3>
+        <p class="metric">₹{{ "%.2f"|format(todays_profit) }}</p>
+    </div>
+
+    <!-- This Month's Profit Card -->
+    <div class="card">
+        <h3>Month's Profit</h3>
+        <p class="metric">₹{{ "%.2f"|format(months_profit) }}</p>
+    </div>
+
+    <!-- Sales Trend Chart -->
+    <div class="card full-width">
+        <h3>Sales Trend (Last 30 Days)</h3>
+        <canvas id="salesChart"></canvas>
+    </div>
+
+    <!-- Customer Ratio Chart -->
+    <div class="card">
+        <h3>New vs. Returning Customers</h3>
+        <canvas id="customerChart"></canvas>
+    </div>
+
+    <!-- Revenue by Category Chart -->
+    <div class="card">
+        <h3>Revenue by Category</h3>
+        <canvas id="categoryChart"></canvas>
+    </div>
+
+    <!-- Top Products by Revenue -->
+    <div class="card">
+        <h3>Top 5 Products (by Revenue)</h3>
+        <table>
+            <thead><tr><th>Product</th><th>Revenue</th></tr></thead>
+            <tbody>
+                {% for product in top_products_by_revenue %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>₹{{ "%.2f"|format(product.total_revenue) }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2">No sales data yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Top Products by Units Sold -->
+    <div class="card">
+        <h3>Top 5 Products (by Units Sold)</h3>
+        <table>
+            <thead><tr><th>Product</th><th>Units Sold</th></tr></thead>
+            <tbody>
+                {% for product in top_products_by_units %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.total_units }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2">No sales data yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Chart.js from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Sales Trend Chart (Line)
+        const salesLabels = {{ sales_chart_labels|safe }};
+        if (salesLabels && salesLabels.length > 0) {
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: salesLabels,
+                    datasets: [{
+                        label: 'Daily Sales (₹)',
+                        data: {{ sales_chart_data|safe }},
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    }]
+                }
+            });
+        }
+
+        // Customer Chart (Pie)
+        const newCustomers = {{ new_customers }};
+        const returningCustomers = {{ returning_customers }};
+        if (newCustomers > 0 || returningCustomers > 0) {
+            const customerCtx = document.getElementById('customerChart').getContext('2d');
+            new Chart(customerCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['New Customers', 'Returning Customers'],
+                    datasets: [{
+                        label: 'Customer Type',
+                        data: [newCustomers, returningCustomers],
+                        backgroundColor: ['rgb(54, 162, 235)', 'rgb(255, 205, 86)']
+                    }]
+                }
+            });
+        }
+        
+        // Category Revenue Chart (Doughnut)
+        const categoryLabels = {{ category_chart_labels|safe }};
+        if (categoryLabels && categoryLabels.length > 0) {
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        label: 'Revenue',
+                        data: {{ category_chart_data|safe }},
+                        backgroundColor: [
+                            'rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)',
+                            'rgb(75, 192, 192)', 'rgb(153, 102, 255)', 'rgb(255, 159, 64)'
+                        ]
+                    }]
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

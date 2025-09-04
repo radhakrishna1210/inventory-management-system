@@ -1,0 +1,51 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+    <h2>Manage Products</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name">Product Name</label>
+            <input type="text" id="name" name="name" placeholder="e.g., Running Shoes" required>
+        </div>
+        <div class="form-group">
+            <label for="cost_price">Cost Price (₹)</label>
+            <input type="number" step="0.01" id="cost_price" name="cost_price" placeholder="e.g., 500.00" required>
+        </div>
+        <div class="form-group">
+            <label for="selling_price">Selling Price (₹)</label>
+            <input type="number" step="0.01" id="selling_price" name="selling_price" placeholder="e.g., 899.00" required>
+        </div>
+        <div class="form-group">
+            <label for="category">Category</label>
+            <input type="text" id="category" name="category" placeholder="e.g., Footwear">
+        </div>
+        <div class="form-group">
+            <label for="image_file">Product Image</label>
+            <input type="file" id="image_file" name="image_file">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="Product Description"></textarea>
+        </div>
+        <button type="submit">Add Product</button>
+    </form>
+    
+    <h3>Existing Products</h3>
+    <table>
+        <thead><tr><th>ID</th><th>Name</th><th>Cost Price</th><th>Selling Price</th><th>Stock</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.id }}</td>
+                <td>{{ product.name }}</td>
+                <td>₹{{ "%.2f"|format(product.cost_price) }}</td>
+                <td>₹{{ "%.2f"|format(product.selling_price) }}</td>
+                <td>{{ product.stock }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('admin.edit_product', id=product.id) }}" class="btn-edit">Edit</a>
+                    <a href="{{ url_for('admin.delete_product', id=product.id) }}" class="btn-delete">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

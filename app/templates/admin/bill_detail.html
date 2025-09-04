@@ -1,0 +1,35 @@
+
+<!-- FILE: app/templates/admin/bill_detail.html (Corrected) -->
+{% extends 'admin_base.html' %}
+{% block content %}
+    <div class="bill-actions">
+        <button onclick="window.print()" class="btn-print">Print Bill</button>
+    </div>
+    <div class="bill-container">
+        <h2>Bill #{{ bill.id }}</h2>
+        <p><strong>Customer:</strong> {{ bill.customer_name }}</p>
+        <p><strong>Date:</strong> {{ bill.date.strftime('%Y-%m-%d %H:%M') }}</p>
+        
+        <h3>Items Purchased</h3>
+        <table>
+            <thead><tr><th>Product</th><th>Quantity</th><th>Price/Unit</th><th>Subtotal</th></tr></thead>
+            <tbody>
+                {% for item in bill.items %}
+                <tr>
+                    <td>{{ item.product_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ "%.2f"|format(item.price_per_unit) }}</td>
+                    <td>₹{{ "%.2f"|format(item.quantity * item.price_per_unit) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="cost-summary">
+            <p><strong>Subtotal:</strong> ₹{{ "%.2f"|format(bill.subtotal) }}</p>
+            <p><strong>Tax ({{ bill.tax_percentage }}%):</strong> + ₹{{ "%.2f"|format(bill.subtotal * bill.tax_percentage / 100) }}</p>
+            <p><strong>Discount:</strong> - ₹{{ "%.2f"|format(bill.discount_amount) }}</p>
+            <h3>Final Amount: ₹{{ "%.2f"|format(bill.final_amount) }}</h3>
+        </div>
+    </div>
+{% endblock %}

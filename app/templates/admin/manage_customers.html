@@ -1,0 +1,33 @@
+<!-- FILE: app/templates/admin/manage_customers.html (New File) -->
+{% extends 'admin_base.html' %}
+{% block content %}
+    <h2>Manage Customer Accounts</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>City</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer in customers %}
+            <tr>
+                <td>{{ customer.id }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.city or 'N/A' }}</td>
+                <td>
+                    <a href="{{ url_for('admin.delete_customer', id=customer.id) }}" class="btn-delete">Delete</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No customers have registered yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

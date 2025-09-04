@@ -1,0 +1,56 @@
+{% extends 'shop_base.html' %}
+{% block content %}
+    <h2>My Profile</h2>
+    <p>Welcome, {{ current_user.name }}! You can view and update your information here.</p>
+    <br>
+    <form method="POST">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+        </div>
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address" name="address">{{ user.address or '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" value="{{ user.city or '' }}">
+        </div>
+        <button type="submit">Update Profile</button>
+    </form>
+    
+    <hr style="margin: 2rem 0;">
+
+    <h3>My Order History</h3>
+    {% if current_user.bills %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Bill ID</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bill in current_user.bills|sort(attribute='date', reverse=True) %}
+                <tr>
+                    <td>#{{ bill.id }}</td>
+                    <td>{{ bill.date.strftime('%Y-%m-%d') }}</td>
+                    <td>₹{{ "%.2f"|format(bill.final_amount) }}</td>
+                    <td>
+                        <!-- Note: This link will require an admin login to view the bill detail -->
+                        <a href="{{ url_for('admin.bill_detail', id=bill.id) }}" class="btn-edit" style="background-color: #6b7280;">View Bill</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have not placed any orders yet.</p>
+    {% endif %}
+{% endblock %}

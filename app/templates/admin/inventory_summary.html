@@ -1,0 +1,21 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+    <h2>Inventory Summary</h2>
+    <p>This shows the total available stock for each product across all batches.</p>
+    <table>
+        <thead><tr><th>Product Name</th><th>Category</th><th>Total Stock</th></tr></thead>
+        <tbody>
+            {% for item in inventory %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.category or 'N/A' }}</td>
+                <td>{{ item.stock or 0 }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">No products found. Add products and stock first.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

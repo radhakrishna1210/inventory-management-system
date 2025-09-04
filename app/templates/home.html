@@ -1,0 +1,27 @@
+{% extends 'shop_base.html' %}
+{% block content %}
+    <div class="hero">
+        <h1>Welcome to Our Store</h1>
+        <p>Quality products, delivered to your door.</p>
+    </div>
+    <h2>All Products</h2>
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <a href="{{ url_for('main.product_detail', id=product.id) }}">
+                <img src="{{ url_for('static', filename='uploads/' + product.image_file) }}" alt="{{ product.name }}">
+                <h3>{{ product.name }}</h3>
+                <!-- CORRECTED: Use selling_price and ₹ symbol -->
+                <p class="price">₹{{ "%.2f"|format(product.selling_price) }}</p>
+                {% if product.stock > 0 %}
+                    <span class="stock-level">In Stock</span>
+                {% else %}
+                    <span class="stock-level out-of-stock">Out of Stock</span>
+                {% endif %}
+            </a>
+        </div>
+        {% else %}
+        <p>No products found.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+    <h2>Add Stock (Batch-wise)</h2>
+    <form method="POST" class="form-grid-full custom-grid-cols">
+        <label for="product_id_select">Product:</label>
+        <select id="product_id_select" name="product_id" required>
+            <option value="">-- Select Product --</option>
+            {% for p in products %}
+                <option value="{{ p.id }}">{{ p.name }}</option>
+            {% endfor %}
+        </select>
+        <input type="number" name="quantity" placeholder="Quantity to Add" required>
+        <button type="submit">Add Stock</button>
+    </form>
+    
+    <h3>All Inventory Batches</h3>
+    <table>
+        <thead><tr><th>Batch ID</th><th>Product</th><th>Quantity in Batch</th></tr></thead>
+        <tbody>
+            {% for batch in batches %}
+            <tr>
+                <td>{{ batch.id }}</td>
+                <td>{{ batch.product.name }}</td>
+                <td>{{ batch.quantity }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3">No batches found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

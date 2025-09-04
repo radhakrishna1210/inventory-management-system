@@ -1,0 +1,21 @@
+# Virtual Environment
+# Prevents uploading hundreds of library files
+venv/
+
+# Python cache files
+# These are auto-generated and not needed in the repo
+__pycache__/
+*.pyc
+
+# Environment variables & secrets
+# Never upload files containing passwords or secret keys
+.env
+.flaskenv
+
+# Instance folder
+# Often contains secrets or temporary database files
+/instance
+
+# Build artifacts
+# Compiled files like .exe should not be in the repo
+/dist

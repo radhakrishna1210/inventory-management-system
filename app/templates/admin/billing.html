@@ -1,0 +1,106 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+    <h2>Create New Bill (Manual Entry)</h2>
+    <form id="billing-form">
+        <div class="form-group">
+            <label for="customer_name">Customer Name:</label>
+            <input type="text" id="customer_name" name="customer_name" required>
+        </div>
+        <div class="form-group">
+            <label for="customer_email">Customer Email (Optional):</label>
+            <input type="email" id="customer_email" name="customer_email">
+        </div>
+        
+        <table id="bill-items">
+            <thead><tr><th>Product</th><th>Quantity</th><th></th></tr></thead>
+            <tbody></tbody>
+        </table>
+        
+        <button type="button" onclick="addItemRow()">+ Add Item</button>
+        
+        <hr>
+        <div class="form-grid-small">
+            <label for="tax_percentage">Tax (%):</label>
+            <input type="number" step="0.01" id="tax_percentage" name="tax_percentage" value="0">
+            
+            <label for="discount_amount">Discount (₹):</label>
+            <input type="number" step="0.01" id="discount_amount" name="discount_amount" value="0">
+        </div>
+        <hr>
+        
+        <button type="submit">Generate Bill</button>
+    </form>
+
+<script>
+    const products = {{ products_json|safe }};
+
+    function addItemRow() {
+        const tbody = document.querySelector('#bill-items tbody');
+        const row = document.createElement('tr');
+        
+        let options = '<option value="">-- Select Product --</option>';
+        products.forEach(p => {
+            options += `<option value="${p.id}">${p.name} (Stock: ${p.stock})</option>`;
+        });
+
+        row.innerHTML = `
+            <td><select class="bill-product" required>${options}</select></td>
+            <td><input type="number" class="bill-quantity" value="1" min="1" required></td>
+            <td><button type="button" class="btn-delete" onclick="this.parentElement.parentElement.remove()">X</button></td>
+        `;
+        tbody.appendChild(row);
+    }
+
+    document.getElementById('billing-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const items = [];
+        document.querySelectorAll('#bill-items tbody tr').forEach(row => {
+            const productSelect = row.querySelector('.bill-product');
+            const quantityInput = row.querySelector('.bill-quantity');
+            if (productSelect.value) {
+                items.push({
+                    id: productSelect.value,
+                    quantity: quantityInput.value
+                });
+            }
+        });
+
+        if (items.length === 0) {
+            alert('Please add at least one item to the bill.');
+            return;
+        }
+
+        const billData = {
+            customer_name: document.getElementById('customer_name').value,
+            customer_email: document.getElementById('customer_email').value,
+            tax_percentage: document.getElementById('tax_percentage').value,
+            discount_amount: document.getElementById('discount_amount').value,
+            items: items
+        };
+
+        fetch("{{ url_for('admin.create_bill') }}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(billData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Redirect to the new bill's detail page
+                window.location.href = `/admin/bill/${data.bill_id}`;
+            } else {
+                // Show a more specific error message from the backend
+                alert('Error creating bill: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An unexpected error occurred. Please check the console.');
+        });
+    });
+
+    // Add one item row by default when the page loads
+    document.addEventListener('DOMContentLoaded', addItemRow);
+</script>
+{% endblock %}
